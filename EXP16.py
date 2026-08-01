@@ -1,39 +1,41 @@
 import random
 
-# States
-states = ["Center", "Left", "Right", "Goal"]
+# Lane States
+states = ["Left", "Center", "Right", "Goal"]
 
-# Actions
-actions = ["Steer Left", "Steer Right", "Keep Straight"]
+# Possible Actions
+actions = ["Steer Left", "Steer Right", "Straight"]
 
-# Policy (Action for each state)
+# Initial Policy
 policy = {
-    "Center": "Keep Straight",
     "Left": "Steer Right",
+    "Center": "Straight",
     "Right": "Steer Left"
 }
 
-# Rewards
+# Reward Function
 rewards = {
-    "Center": 10,
     "Left": -5,
+    "Center": 10,
     "Right": -5,
     "Goal": 100
 }
 
 # Transition Function
 transitions = {
-    ("Center", "Keep Straight"): "Goal",
     ("Left", "Steer Right"): "Center",
+    ("Center", "Straight"): "Goal",
     ("Right", "Steer Left"): "Center"
 }
 
 episodes = 100
 
-# Training (Simplified Policy Gradient)
+print("Training Started...\n")
+
+# Simplified Policy Gradient Training
 for episode in range(episodes):
 
-    state = random.choice(["Center", "Left", "Right"])
+    state = random.choice(["Left", "Center", "Right"])
 
     while state != "Goal":
 
@@ -43,33 +45,31 @@ for episode in range(episodes):
 
         reward = rewards[next_state]
 
-        # Simplified Policy Update
-        if reward < 0:
+        # Simple Policy Update
+        if reward > 0:
+            policy[state] = action
+        else:
             policy[state] = random.choice(actions)
 
         state = next_state
 
-print("Training Completed!")
+print("Training Completed!\n")
 
-print("\nLearned Policy")
-for state in policy:
-    print(state, "->", policy[state])
-
-# Testing
-print("\nLane Keeping Simulation")
+# Evaluation
+print("Autonomous Lane Keeping Simulation\n")
 
 state = "Left"
 
-print("Initial State:", state)
+print("Initial State :", state)
 
 while state != "Goal":
 
     action = policy[state]
 
-    print("Action:", action)
+    print("Action :", action)
 
     state = transitions[(state, action)]
 
-    print("Next State:", state)
+    print("Next State :", state)
 
-print("\nVehicle Successfully Kept in Lane!")
+print("\nVehicle Successfully Reached the Goal!")
